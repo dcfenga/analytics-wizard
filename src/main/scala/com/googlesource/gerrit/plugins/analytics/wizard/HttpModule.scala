@@ -11,23 +11,16 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package com.googlesource.gerrit.plugins.analytics.wizard
 
 import com.google.gerrit.extensions.registration.DynamicSet
-import com.google.gerrit.extensions.restapi.RestApiModule
 import com.google.gerrit.httpd.AllRequestFilter
-import com.google.gerrit.server.project.ProjectResource.PROJECT_KIND
-import com.google.inject.AbstractModule
+import com.google.inject.servlet.ServletModule
 
-class Module extends AbstractModule {
+class HttpModule extends ServletModule {
 
-  override protected def configure() {
-    install(new RestApiModule() {
-      override protected def configure() = {
-        get(PROJECT_KIND, "stack").to(classOf[GetAnalyticsStack])
-
-        put(PROJECT_KIND, "stack").to(classOf[PutAnalyticsStack])
-      }
-    })
+  override def configureServlets() {
+    DynamicSet.bind(binder(), classOf[AllRequestFilter]).to(classOf[XAuthFilter])
   }
 }

@@ -25,6 +25,7 @@ lazy val root = (project in file("."))
       ("Gerrit-ApiType", "plugin"),
       ("Gerrit-PluginName", pluginName),
       ("Gerrit-Module", "com.googlesource.gerrit.plugins.analytics.wizard.Module"),
+      ("Gerrit-HttpModule", "com.googlesource.gerrit.plugins.analytics.wizard.HttpModule"),
       ("Implementation-Title", "Analytics plugin wizard")
     )
   )
