@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en-US">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>GitHub plugin for Gerrit Code Review - Analytics Dashboard Setup</title>
+
+    <link rel="stylesheet" href="css/analyticswizard.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script type='text/javascript' src='js/jquery-3.3.1.min.js'></script>
+    <script type='text/javascript' src="js/bootstrap.min.js"></script>
+    <script type='text/javascript' src='js/analyticswizard.js'></script>
+</head>
+<body>
+<!--div.container start -->
+<div class="container">
+    <div class="page-header">
+        <h1>Dashboard analytics wizard</h1>
+    </div>
+    <div class="center">
+        Project name: <input id="input-project-name" type="text">
+    </div>
+    <div id="config-section" hidden>
+        <div id="config-file">Config file: </div>
+    </div>
+    <br>
+    <input type="button" class="btn btn-primary" value="Create dashboard configuration" onClick="submitDetailsForm()"/>
+    <input type="button" class="btn btn-primary" value="Show dashboard config" onClick="showConfigDetails()"/>
+    <br><br>
+    <div id="config-created-alert" class="alert alert-success alert-trim" role="alert" style="display: none;">
+        Dashboard configuration successfully created.
+    </div>
+    <div id="config-error-alert" class="alert-danger alert-trim" role="alert" style="display: none;">
+        Something went wrong while creating Dashboard configuration.
+    </div>
+</div>
+
+<!--div.container end -->
+</body>
+</html>
