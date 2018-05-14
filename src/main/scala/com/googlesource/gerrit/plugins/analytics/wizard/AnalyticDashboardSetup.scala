@@ -35,14 +35,14 @@ case class AnalyticDashboardSetup(name: String, config: Option[String] = None)(
        |version: '3'
        |services:
        |  kibana:
-       |    build: kibana
+       |    image: gerritforge/analytics-kibana:latest
        |    container_name: "kibana-for-${name}-project"
        |    environment:
        |      SERVER_BASEPATH: "/kibana"
        |    depends_on:
        |      - elasticsearch
        |  elasticsearch:
-       |    build: elasticsearch
+       |    image: gerritforge/analytics-elasticsearch:latest
        |    container_name: "es-for-${name}-project"
        |    environment:
        |      - ES_JAVA_OPTS=-Xmx4g -Xms4g
