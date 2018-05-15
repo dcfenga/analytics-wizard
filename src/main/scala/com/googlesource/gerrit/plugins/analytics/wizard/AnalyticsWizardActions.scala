@@ -13,17 +13,20 @@
 // limitations under the License.
 package com.googlesource.gerrit.plugins.analytics.wizard
 
+import java.nio.charset.StandardCharsets.UTF_8
+
+import com.google.common.io.ByteStreams
 import com.google.gerrit.extensions.restapi.{
   Response,
+  RestApiException,
   RestModifyView,
   RestReadView
 }
 import com.google.gerrit.server.project.ProjectResource
 import com.google.inject.Inject
+import AnalyticDashboardSetup.writer
 
 import scala.io.Source
-
-import AnalyticDashboardSetup.writer
 
 class GetAnalyticsStack @Inject()() extends RestReadView[ProjectResource] {
   override def apply(
@@ -51,5 +54,34 @@ class PutAnalyticsStack @Inject()()
     val projectName = resource.getControl.getProject.getName
     AnalyticDashboardSetup(projectName).createDashboardSetupFile()
     Response.created(s"Dashboard configuration created for $projectName!")
+  }
+}
+
+class DockerComposeCommand(var action: String)
+class PostAnalyticsStack @Inject()()
+    extends RestModifyView[ProjectResource, DockerComposeCommand] {
+  override def apply(resource: ProjectResource,
+                     input: DockerComposeCommand): Response[String] = {
+
+    val projectName = resource.getControl.getProject.getName
+    val pb = new ProcessBuilder(
+      "docker-compose",
+      "-f",
+      s"/tmp/docker-compose.${projectName}.yaml",
+      input.action.toLowerCase) // XXX validate command!
+    pb.redirectErrorStream(true)
+
+    val ps: Process = pb.start
+    ps.getOutputStream.close
+    val output = new String(ByteStreams.toByteArray(ps.getInputStream), UTF_8)
+    ps.waitFor
+
+    ps.exitValue match {
+      case 0 => Response.created(output)
+      case _ =>
+        throw new RestApiException(
+          s"Failed with exit code: ${ps.exitValue} - $output")
+    }
+
   }
 }
