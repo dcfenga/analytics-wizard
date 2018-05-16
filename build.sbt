@@ -9,7 +9,7 @@ lazy val root = (project in file("."))
   .settings(
     name := pluginName,
 
-    scalaVersion := "2.12.5",
+    scalaVersion := "2.11.8",
 
     libraryDependencies ++= Seq(
       "com.google.inject" % "guice" % "3.0" % Provided,
