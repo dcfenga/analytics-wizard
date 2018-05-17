@@ -14,20 +14,20 @@
 package com.googlesource.gerrit.plugins.analytics.wizard
 
 import java.io.PrintWriter
+import java.nio.charset.{Charset, StandardCharsets}
+import java.nio.file.{Files, Path}
 
 trait ConfigWriter {
-  def write(filename: String, out: String)
+  def write(outputPath: Path, out: String)
 }
 
 class ConfigWriterImpl extends ConfigWriter {
-  def write(filename: String, out: String) = {
-    val p = new PrintWriter(filename)
-    p.write(out)
-    p.close()
+  def write(outputPath: Path, out: String) {
+    Files.write(outputPath, out.getBytes(StandardCharsets.UTF_8))
   }
 }
 
-case class AnalyticDashboardSetup(name: String, config: Option[String] = None)(
+case class AnalyticDashboardSetup(name: String, dockerComposeYamlPath: Path)(
     implicit val writer: ConfigWriter) {
 
   private val dockerComposeTemplate = { (name: String) =>
@@ -68,9 +68,8 @@ case class AnalyticDashboardSetup(name: String, config: Option[String] = None)(
      """.stripMargin
   }
 
-  val configFileName = s"/tmp/docker-compose.${name}.yaml"
   def createDashboardSetupFile(): Unit = {
-    writer.write(configFileName, dockerComposeTemplate(name))
+    writer.write(dockerComposeYamlPath, dockerComposeTemplate(name))
   }
 
 }

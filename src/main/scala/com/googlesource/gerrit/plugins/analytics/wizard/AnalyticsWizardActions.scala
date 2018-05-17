@@ -14,6 +14,7 @@
 package com.googlesource.gerrit.plugins.analytics.wizard
 
 import java.nio.charset.StandardCharsets.UTF_8
+import java.nio.file.Path
 
 import com.google.common.io.ByteStreams
 import com.google.gerrit.extensions.restapi.{
@@ -25,10 +26,11 @@ import com.google.gerrit.extensions.restapi.{
 import com.google.gerrit.server.project.ProjectResource
 import com.google.inject.Inject
 import AnalyticDashboardSetup.writer
+import com.google.gerrit.extensions.annotations.PluginData
 
 import scala.io.Source
 
-class GetAnalyticsStack @Inject()() extends RestReadView[ProjectResource] {
+class GetAnalyticsStack @Inject()(@PluginData val dataPath: Path) extends RestReadView[ProjectResource] {
   override def apply(
       resource: ProjectResource): Response[AnalyticDashboardSetup] = {
 
@@ -36,29 +38,25 @@ class GetAnalyticsStack @Inject()() extends RestReadView[ProjectResource] {
     Response.ok(
       AnalyticDashboardSetup(
         projectName,
-        Some(
-          Source
-            .fromFile(s"/tmp/docker-compose.${projectName}.yaml")
-            .getLines
-            .mkString)))
+        dataPath.resolve(s"docker-compose.${projectName}.yaml")))
   }
 }
 
 class Input(var dashboardName: String)
 
-class PutAnalyticsStack @Inject()()
+class PutAnalyticsStack @Inject()(@PluginData val dataPath: Path)
     extends RestModifyView[ProjectResource, Input] {
   override def apply(resource: ProjectResource,
                      input: Input): Response[String] = {
 
     val projectName = resource.getControl.getProject.getName
-    AnalyticDashboardSetup(projectName).createDashboardSetupFile()
+    AnalyticDashboardSetup(projectName, dataPath.resolve(s"docker-compose.${projectName}.yaml")).createDashboardSetupFile()
     Response.created(s"Dashboard configuration created for $projectName!")
   }
 }
 
 class DockerComposeCommand(var action: String)
-class PostAnalyticsStack @Inject()()
+class PostAnalyticsStack @Inject()(@PluginData val dataPath: Path)
     extends RestModifyView[ProjectResource, DockerComposeCommand] {
   override def apply(resource: ProjectResource,
                      input: DockerComposeCommand): Response[String] = {
@@ -67,8 +65,8 @@ class PostAnalyticsStack @Inject()()
     val pb = new ProcessBuilder(
       "docker-compose",
       "-f",
-      s"/tmp/docker-compose.${projectName}.yaml",
-      input.action.toLowerCase) // XXX validate command!
+      s"${dataPath.toFile.getAbsolutePath}/docker-compose.${projectName}.yaml",
+      input.action.toLowerCase)
     pb.redirectErrorStream(true)
 
     val ps: Process = pb.start
