@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en-US">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>GitHub plugin for Gerrit Code Review - Analytics Service control panel</title>
+
+    <link rel="stylesheet" href="css/analyticswizard.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script type='text/javascript' src='js/jquery-3.3.1.min.js'></script>
+    <script type='text/javascript' src="js/bootstrap.min.js"></script>
+    <script type='text/javascript' src='js/analyticswizard.js'></script>
+</head>
+<body>
+<!--div.container start -->
+<div class="container">
+    <div class="page-header">
+        <h1>Dashboard analytics wizard</h1>
+    </div>
+    <div class="center">
+        Project name: <input id="input-project-name" type="text">
+    </div>
+    <input type="button" class="btn btn-primary" value="Start dashboard" onClick="dashboardService('up')"/>
+    <input type="button" class="btn btn-primary" value="Stop dashboard" onClick="dashboardService('down')"/>
+    <br><br>
+    <div id="up-ok-alert" class="alert alert-success alert-trim" role="alert" style="display: none;">
+        Dashboard started successfully.
+    </div>
+    <div id="down-ok-alert" class="alert alert-success alert-trim" role="alert" style="display: none;">
+        Dashboard stopped successfully.
+    </div>
+    <div id="up-error-alert" class="alert-danger alert-trim" role="alert" style="display: none;">
+        Error starting the dashboard.
+    </div>
+    <div id="down-error-alert" class="alert-danger alert-trim" role="alert" style="display: none;">
+        Error stopping the dashboard.
+    </div>
+</div>
+
+<!--div.container end -->
+</body>
+</html>
