@@ -24,7 +24,7 @@ var handleError = function(data, textStatus, jqXHR) {
 
 
 function submitDetailsForm() {
-    var projectName = $("#input-project-name").val();
+    var projectName = encodeURIComponent($("#input-project-name").val());
     $.ajax({
       type : "PUT",
       url : `/a/projects/${projectName}/analytics-wizard~stack`,
@@ -54,7 +54,7 @@ var handle201Status = function(command) {
 };
 
 function dashboardService(command) {
-    var projectName = $("#input-project-name").val();
+    var projectName = encodeURIComponent($("#input-project-name").val());
     $.ajax({
       type : "POST",
       url : `/a/projects/${projectName}/analytics-wizard~server`,
