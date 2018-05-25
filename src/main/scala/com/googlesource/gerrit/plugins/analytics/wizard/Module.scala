@@ -22,7 +22,6 @@ class Module extends AbstractModule {
   override protected def configure() {
     install(new RestApiModule() {
       override protected def configure() = {
-        get(PROJECT_KIND, "stack").to(classOf[GetAnalyticsStack])
 
         put(PROJECT_KIND, "stack").to(classOf[PutAnalyticsStack])
 

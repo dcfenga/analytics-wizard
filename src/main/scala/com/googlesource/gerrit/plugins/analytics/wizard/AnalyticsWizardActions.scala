@@ -29,19 +29,6 @@ import com.google.gerrit.server.project.ProjectResource
 import com.google.inject.Inject
 import com.googlesource.gerrit.plugins.analytics.wizard.AnalyticDashboardSetup.writer
 
-class GetAnalyticsStack @Inject()(@PluginData val dataPath: Path)
-    extends RestReadView[ProjectResource] {
-  override def apply(
-      resource: ProjectResource): Response[AnalyticDashboardSetup] = {
-
-    val projectName = resource.getControl.getProject.getName
-    Response.ok(
-      AnalyticDashboardSetup(
-        projectName,
-        dataPath.resolve(s"docker-compose.${projectName}.yaml")))
-  }
-}
-
 class Input(var dashboardName: String)
 
 class PutAnalyticsStack @Inject()(@PluginData val dataPath: Path)

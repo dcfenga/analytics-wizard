@@ -75,22 +75,6 @@ function dashboardService(command) {
     });
 }
 
-function showConfigDetails() {
-    var projectName = $("#input-project-name").val();
-    $.ajax({
-            url: `/projects/${projectName}/analytics-wizard~stack`,
-            type: "GET",
-            dataType: "json",
-            success: function(data) {
-              $('#config-section').removeAttr('hidden');
-              $('#config-file').text( $('#config-file').text() + data.config_file_name);
-            },
-            error: function(e) {
-              console.error(JSON.stringify(e));
-            }
-        });
-}
-
 $(document).ready(function () {
   console.log("Starting Analytics wizard plugin...");
   $.ajaxSetup({
