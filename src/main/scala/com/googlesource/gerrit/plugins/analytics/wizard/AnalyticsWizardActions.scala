@@ -36,7 +36,7 @@ class PutAnalyticsStack @Inject()(@PluginData val dataPath: Path)
   override def apply(resource: ProjectResource,
                      input: Input): Response[String] = {
 
-    val projectName = resource.getControl.getProject.getName
+    val projectName = resource.getName
     val encodedName = AnalyticsWizardActions
       .encodedName(projectName)
 
@@ -55,7 +55,7 @@ class PostAnalyticsStack @Inject()(@PluginData val dataPath: Path)
   override def apply(resource: ProjectResource,
                      input: DockerComposeCommand): Response[String] = {
 
-    val projectName = resource.getControl.getProject.getName
+    val projectName = resource.getName
     val encodedName = AnalyticsWizardActions
       .encodedName(projectName)
 

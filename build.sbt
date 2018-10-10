@@ -1,6 +1,6 @@
 enablePlugins(GitVersioning)
 
-val gerritApiVersion = "2.15.1"
+val gerritApiVersion = "2.16-SNAPSHOT"
 val pluginName = "analytics-wizard"
 
 git.useGitDescribe := true
@@ -8,6 +8,7 @@ git.useGitDescribe := true
 lazy val root = (project in file("."))
   .settings(
     name := pluginName,
+    resolvers += Resolver.mavenLocal,
 
     scalaVersion := "2.11.8",
 
