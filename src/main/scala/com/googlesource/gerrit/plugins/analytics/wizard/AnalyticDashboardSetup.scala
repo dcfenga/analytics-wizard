@@ -64,9 +64,13 @@ case class AnalyticDashboardSetup(name: String, dockerComposeYamlPath: Path)(
        |    networks:
        |      - ek
        |    environment:
-       |      - ES_JAVA_OPTS=-Xmx4g -Xms4g
+       |      - ES_JAVA_OPTS=-Xmx1g -Xms1g
        |      - http.host=0.0.0.0
-       |
+       |      - network.host=_site_
+       |      - http.publish_host=_site_
+       |    ports:
+       |      - "9200:9200"
+       |      - "9300:9300"
        |networks:
        |  ek:
        |    driver: bridge
