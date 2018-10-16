@@ -13,6 +13,7 @@
 // limitations under the License.
 package com.googlesource.gerrit.plugins.analytics.wizard
 
+import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Path}
 
@@ -26,7 +27,7 @@ class ConfigWriterImpl extends ConfigWriter {
   }
 }
 
-case class AnalyticDashboardSetup(name: String, dockerComposeYamlPath: Path)(
+case class AnalyticDashboardSetup(name: String, dockerComposeYamlPath: Path, gerritLocalUrl: URL)(
     implicit val writer: ConfigWriter) {
 
   // Docker doesn't like container names with '/', hence the replace with '-'
@@ -39,6 +40,21 @@ case class AnalyticDashboardSetup(name: String, dockerComposeYamlPath: Path)(
     s"""
        |version: '3'
        |services:
+       |
+       |  spark-gerrit-analytics-etl:
+       |    extra_hosts:
+       |      - gerrit:${gerritLocalUrl.getHost}
+       |    image: gerritforge/spark-gerrit-analytics-etl:latest
+       |    environment:
+       |      - ES_HOST=elasticsearch
+       |      - GERRIT_URL=${gerritLocalUrl.getProtocol}://gerrit:${gerritLocalUrl.getPort}
+       |      - ANALYTICS_ARGS=--since 2000-06-01 --aggregate email_hour --writeNotProcessedEventsTo file:///tmp/failed-events -e gerrit/analytics
+       |    networks:
+       |      - ek
+       |    links:
+       |      - elasticsearch
+       |    depends_on:
+       |      - elasticsearch
        |
        |  dashboard-importer:
        |    image: gerritforge/analytics-dashboard-importer:latest

@@ -19,41 +19,46 @@ import java.nio.file.Path
 
 import com.google.common.io.ByteStreams
 import com.google.gerrit.extensions.annotations.PluginData
-import com.google.gerrit.extensions.restapi.{
-  Response,
-  RestApiException,
-  RestModifyView,
-  RestReadView
-}
+import com.google.gerrit.extensions.restapi.{Response, RestApiException, RestModifyView, RestReadView}
+import com.google.gerrit.server.config.GerritServerConfig
 import com.google.gerrit.server.project.ProjectResource
 import com.google.inject.{ImplementedBy, Inject}
 import com.googlesource.gerrit.plugins.analytics.wizard.AnalyticDashboardSetup.writer
-import com.spotify.docker.client.{DefaultDockerClient, DockerClient}
+import com.googlesource.gerrit.plugins.analytics.wizard.utils._
 import com.spotify.docker.client.messages.ContainerInfo
+import com.spotify.docker.client.{DefaultDockerClient, DockerClient}
+import org.eclipse.jgit.lib.Config
+
+import scala.util.{Failure, Success}
 
 class Input(var dashboardName: String)
 
-class PutAnalyticsStack @Inject()(@PluginData val dataPath: Path)
+class PutAnalyticsStack @Inject()(@PluginData val dataPath: Path, @GerritServerConfig gerritConfig: Config)
     extends RestModifyView[ProjectResource, Input] {
-  override def apply(resource: ProjectResource,
-                     input: Input): Response[String] = {
+
+  override def apply(resource: ProjectResource, input: Input): Response[String] = {
 
     val projectName = resource.getName
-    val encodedName = AnalyticsWizardActions
-      .encodedName(projectName)
+    val encodedName = AnalyticsWizardActions.encodedName(projectName)
 
-    AnalyticDashboardSetup(
-      projectName,
-      dataPath.resolve(s"docker-compose.${encodedName}.yaml"))
-      .createDashboardSetupFile()
-    Response.created(s"Dashboard configuration created for $encodedName!")
+    val configHelper = new GerritConfigHelper(gerritConfig) with LocalAddressGetter
 
+    configHelper.getGerritLocalAddress match {
+      case Success(gerritLocalUrl) =>
+        AnalyticDashboardSetup(
+          projectName, dataPath.resolve(s"docker-compose.$encodedName.yaml"), gerritLocalUrl
+        ).createDashboardSetupFile()
+
+        Response.created(s"Dashboard configuration created for $encodedName!")
+      case Failure(exception) =>
+        Response.withStatusCode(500, s"Cannot create dashboard configuration - '${exception.getMessage}'")
+    }
   }
 }
 
 class DockerComposeCommand(var action: String)
 class PostAnalyticsStack @Inject()(@PluginData val dataPath: Path)
-    extends RestModifyView[ProjectResource, DockerComposeCommand] {
+extends RestModifyView[ProjectResource, DockerComposeCommand] {
   override def apply(resource: ProjectResource,
                      input: DockerComposeCommand): Response[String] = {
 
