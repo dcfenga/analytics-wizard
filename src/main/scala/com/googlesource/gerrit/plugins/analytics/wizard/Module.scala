@@ -26,6 +26,8 @@ class Module extends AbstractModule {
         put(PROJECT_KIND, "stack").to(classOf[PutAnalyticsStack])
 
         post(PROJECT_KIND, "server").to(classOf[PostAnalyticsStack])
+
+        get(PROJECT_KIND, "status").to(classOf[GetAnalyticsStackStatus])
       }
     })
   }
