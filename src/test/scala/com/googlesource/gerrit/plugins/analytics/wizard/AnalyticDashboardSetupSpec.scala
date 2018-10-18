@@ -19,7 +19,9 @@ class AnalyticDashboardSetupSpec extends FlatSpec with Matchers {
     implicit val writer = new MockWriter()
 
     val composeYamlFile = File.createTempFile(getClass.getName, ".yaml").toPath
-    val ads = AnalyticDashboardSetup("aProject", composeYamlFile, new URL("http://gerrit_local_ip_address:8080"))
+    val ads = AnalyticDashboardSetup("aProject",
+                                     composeYamlFile,
+                                     new URL("http://gerrit_local_ip_address:8080"))
     ads.createDashboardSetupFile()
     gotFilename shouldBe Some(composeYamlFile)
   }

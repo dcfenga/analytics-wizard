@@ -19,7 +19,12 @@ import java.nio.file.Path
 
 import com.google.common.io.ByteStreams
 import com.google.gerrit.extensions.annotations.PluginData
-import com.google.gerrit.extensions.restapi.{Response, RestApiException, RestModifyView, RestReadView}
+import com.google.gerrit.extensions.restapi.{
+  Response,
+  RestApiException,
+  RestModifyView,
+  RestReadView
+}
 import com.google.gerrit.server.config.GerritServerConfig
 import com.google.gerrit.server.project.ProjectResource
 import com.google.inject.{ImplementedBy, Inject}
@@ -33,7 +38,8 @@ import scala.util.{Failure, Success}
 
 class Input(var dashboardName: String)
 
-class PutAnalyticsStack @Inject()(@PluginData val dataPath: Path, @GerritServerConfig gerritConfig: Config)
+class PutAnalyticsStack @Inject()(@PluginData val dataPath: Path,
+                                  @GerritServerConfig gerritConfig: Config)
     extends RestModifyView[ProjectResource, Input] {
 
   override def apply(resource: ProjectResource, input: Input): Response[String] = {
@@ -46,21 +52,24 @@ class PutAnalyticsStack @Inject()(@PluginData val dataPath: Path, @GerritServerC
     configHelper.getGerritLocalAddress match {
       case Success(gerritLocalUrl) =>
         AnalyticDashboardSetup(
-          projectName, dataPath.resolve(s"docker-compose.$encodedName.yaml"), gerritLocalUrl
+          projectName,
+          dataPath.resolve(s"docker-compose.$encodedName.yaml"),
+          gerritLocalUrl
         ).createDashboardSetupFile()
 
         Response.created(s"Dashboard configuration created for $encodedName!")
       case Failure(exception) =>
-        Response.withStatusCode(500, s"Cannot create dashboard configuration - '${exception.getMessage}'")
+        Response.withStatusCode(
+          500,
+          s"Cannot create dashboard configuration - '${exception.getMessage}'")
     }
   }
 }
 
 class DockerComposeCommand(var action: String)
 class PostAnalyticsStack @Inject()(@PluginData val dataPath: Path)
-extends RestModifyView[ProjectResource, DockerComposeCommand] {
-  override def apply(resource: ProjectResource,
-                     input: DockerComposeCommand): Response[String] = {
+    extends RestModifyView[ProjectResource, DockerComposeCommand] {
+  override def apply(resource: ProjectResource, input: DockerComposeCommand): Response[String] = {
 
     val projectName = resource.getName
     val encodedName = AnalyticsWizardActions
@@ -82,20 +91,17 @@ extends RestModifyView[ProjectResource, DockerComposeCommand] {
     ps.exitValue match {
       case 0 => Response.created(output)
       case _ =>
-        throw new RestApiException(
-          s"Failed with exit code: ${ps.exitValue} - $output")
+        throw new RestApiException(s"Failed with exit code: ${ps.exitValue} - $output")
     }
   }
 }
 
-class GetAnalyticsStackStatus @Inject()(
-    @PluginData val dataPath: Path,
-    val dockerClientProvider: DockerClientProvider)
+class GetAnalyticsStackStatus @Inject()(@PluginData val dataPath: Path,
+                                        val dockerClientProvider: DockerClientProvider)
     extends RestReadView[ProjectResource] {
   override def apply(resource: ProjectResource): Response[String] = {
     val containerName = "analytics-wizard_spark-gerrit-analytics-etl_1"
-    responseFromContainerInfo(
-      dockerClientProvider.client.inspectContainer(containerName))
+    responseFromContainerInfo(dockerClientProvider.client.inspectContainer(containerName))
   }
 
   private def responseFromContainerInfo(containerInfo: ContainerInfo) = {

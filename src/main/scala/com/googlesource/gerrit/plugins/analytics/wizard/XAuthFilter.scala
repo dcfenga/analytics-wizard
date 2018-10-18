@@ -25,8 +25,9 @@ import com.google.inject.{Inject, Singleton}
 import org.slf4j.{Logger, LoggerFactory}
 
 @Singleton
-class XAuthFilter @Inject()(val webSession: DynamicItem[WebSession], @PluginName pluginName: String) extends AllRequestFilter {
-  implicit val log: Logger = LoggerFactory.getLogger(classOf[XAuthFilter])
+class XAuthFilter @Inject()(val webSession: DynamicItem[WebSession], @PluginName pluginName: String)
+    extends AllRequestFilter {
+  implicit val log: Logger    = LoggerFactory.getLogger(classOf[XAuthFilter])
   val authenticatedPluginURIs = (s".*/a/.*$pluginName.*").r
 
   override def init(filterConfig: FilterConfig) {}

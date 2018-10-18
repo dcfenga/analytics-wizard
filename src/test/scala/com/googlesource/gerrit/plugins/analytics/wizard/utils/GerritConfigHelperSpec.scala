@@ -12,10 +12,12 @@ class GerritConfigHelperSpec extends FlatSpec with Matchers with TestFixtures {
 
   it should "retrieve a URL successfully when the right configuration is set" in {
     val httpProtocol = "http"
-    val httpPort = 8080
-    val helper = new GerritConfigHelper(gerritConfig(httpProtocol, httpPort)) with TestLocalAddressGetter
+    val httpPort     = 8080
+    val helper = new GerritConfigHelper(gerritConfig(httpProtocol, httpPort))
+    with TestLocalAddressGetter
 
-    helper.getGerritLocalAddress.success.value shouldBe new URL(s"$httpProtocol://${helper.getLocalAddress}:$httpPort")
+    helper.getGerritLocalAddress.success.value shouldBe new URL(
+      s"$httpProtocol://${helper.getLocalAddress}:$httpPort")
 
   }
 

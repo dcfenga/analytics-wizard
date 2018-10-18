@@ -6,8 +6,7 @@ trait TestFixtures {
 
   def gerritConfig(httpProtocol: String, httpPort: Int): Config = {
     val gerritConfig = new Config()
-    gerritConfig.fromText(
-      s"""
+    gerritConfig.fromText(s"""
          |[httpd]
          |   listenUrl = $httpProtocol://*:$httpPort/
       """.stripMargin)
