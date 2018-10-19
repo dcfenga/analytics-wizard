@@ -79,7 +79,9 @@ class PostAnalyticsStack @Inject()(@PluginData val dataPath: Path)
       "docker-compose",
       "-f",
       s"${dataPath.toFile.getAbsolutePath}/docker-compose.${encodedName}.yaml",
-      input.action.toLowerCase)
+      input.action.toLowerCase,
+      "--detach"
+    )
     pb.redirectErrorStream(true)
 
     val ps: Process = pb.start
