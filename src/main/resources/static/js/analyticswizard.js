@@ -49,12 +49,18 @@ function wizardGoToDashboard() {
 
 function submitDetailsForm() {
     var projectName = encodeURIComponent($("#input-project-name").val());
+    var requestBody = {
+      dashboard_name: projectName,
+      etl_config: {
+        aggregate: "email"
+      }
+    }
     $.ajax({
       type : "PUT",
       url : `/a/projects/${projectName}/analytics-wizard~stack`,
       dataType: 'application/json',
       // Initially project-dashboard is a 1 to 1 relationship
-      data: "{'dashboard_name': '" + projectName + "'}",
+      data: JSON.stringify(requestBody),
       contentType:"application/json; charset=utf-8",
       // Need to catch the status code since Gerrit doesn't return
       // a well formed JSON, hence Ajax treats it as an error
