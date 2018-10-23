@@ -17,7 +17,6 @@ import java.net.URL
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-import com.googlesource.gerrit.plugins.analytics.wizard.model.AggregationType.Email
 import enumeratum._
 
 import scala.util.{Failure, Success, Try}

@@ -15,6 +15,7 @@ package com.googlesource.gerrit.plugins.analytics.wizard
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets.UTF_8
 import java.nio.file.Path
+
 import com.google.common.io.ByteStreams
 import com.google.gerrit.extensions.annotations.PluginData
 import com.google.gerrit.extensions.restapi.{
@@ -36,6 +37,7 @@ import com.googlesource.gerrit.plugins.analytics.wizard.utils._
 import com.spotify.docker.client.messages.ContainerInfo
 import com.spotify.docker.client.{DefaultDockerClient, DockerClient}
 import org.eclipse.jgit.lib.Config
+
 import scala.util.{Failure, Success}
 case class Input(dashboardName: String, etlConfig: ETLConfigRaw)
 class PutAnalyticsStack @Inject()(@PluginData val dataPath: Path,
@@ -54,8 +56,8 @@ class PutAnalyticsStack @Inject()(@PluginData val dataPath: Path,
         configHelper.getGerritLocalAddress match {
           case Success(gerritLocalUrl) =>
             AnalyticDashboardSetup(
-              projectName,
-              dataPath.resolve(s"docker-compose.$encodedName.yaml"),
+              input.dashboardName,
+              dataPath.resolve(s"docker-compose.${input.dashboardName}.yaml"),
               gerritLocalUrl
             ).createDashboardSetupFile()
             Response.created(s"Dashboard configuration created for $encodedName!")
@@ -68,13 +70,12 @@ class PutAnalyticsStack @Inject()(@PluginData val dataPath: Path,
     )
   }
 }
-class DockerComposeCommand(var action: String)
+class DockerComposeCommand(var action: String, var dashboardName: String)
 class PostAnalyticsStack @Inject()(@PluginData val dataPath: Path)
     extends RestModifyView[ProjectResource, DockerComposeCommand] {
   override def apply(resource: ProjectResource, input: DockerComposeCommand): Response[String] = {
-    val projectName = resource.getName
     val encodedName = AnalyticsWizardActions
-      .encodedName(projectName)
+      .encodedName(input.dashboardName)
     val pb = new ProcessBuilder(
       "docker-compose",
       "-f",

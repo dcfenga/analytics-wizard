@@ -47,43 +47,75 @@ function wizardGoToDashboard() {
     window.location.replace(redirectLocation);
 }
 
-function submitDetailsForm() {
-    var projectName = encodeURIComponent($("#input-project-name").val());
-    var requestBody = {
-      dashboard_name: projectName,
-      etl_config: {
-        aggregate: "email"
-      }
-    }
-    $.ajax({
-      type : "PUT",
-      url : `/a/projects/${projectName}/analytics-wizard~stack`,
-      dataType: 'application/json',
-      // Initially project-dashboard is a 1 to 1 relationship
-      data: JSON.stringify(requestBody),
-      contentType:"application/json; charset=utf-8",
-      // Need to catch the status code since Gerrit doesn't return
-      // a well formed JSON, hence Ajax treats it as an error
-      statusCode: {
-        201: showSuccessWithText("Configuration created successfully")
-      },
-      error: function(jqXHR, textStatus, errorThrown) {
-        if(jqXHR.status != 201) {
-          showFailureWithText("Error creating configuration: " + errorThrown)
-        }
+function getRequestBody() {
+  var etlConfigRaw = {
+    aggregate: $("#aggregate").val(),
+    since: $("#since").val(),
+    until: $("#until").val(),
+    project_prefix: $("#input-project-prefix").val(),
+    username: $("#username").val(),
+    password: $("#password").val()
+  }
+
+  var etlConfig = {};
+  Object.
+    keys(etlConfigRaw).
+    forEach((key) => {
+      if (etlConfigRaw[key]) {
+        etlConfig[key] = etlConfigRaw[key];
       }
     });
+
+  var requestBody = {
+    dashboard_name: $("#input-dashboard-name").val(),
+    etl_config: etlConfig
+  }
+  console.log(`Request body: ${JSON.stringify(requestBody)}`);
+  return requestBody;
+}
+
+function submitDetailsForm() {
+    // Hardcoding All-Projects just to get access to the Gerrit Rest API
+    // A dashboard can span across multiple projects.
+    var projectName = encodeURIComponent("All-Projects");
+    var requestBody = getRequestBody();
+    if (!requestBody.dashboard_name) {
+      showFailureWithText("Dashboard name must be defined!")
+    } else {
+      $.ajax({
+        type : "PUT",
+        url : `/a/projects/${projectName}/analytics-wizard~stack`,
+        dataType: 'application/json',
+        // Initially project-dashboard is a 1 to 1 relationship
+        data: JSON.stringify(requestBody),
+        contentType:"application/json; charset=utf-8",
+        // Need to catch the status code since Gerrit doesn't return
+        // a well formed JSON, hence Ajax treats it as an error
+        statusCode: {
+          201: dashboardService('up')
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          if(jqXHR.status != 201) {
+            showFailureWithText("Error creating configuration: " + errorThrown)
+          }
+        }
+      });
+    }
 }
 
 function dashboardService(command) {
-    var projectName = encodeURIComponent($("#input-project-name").val());
+    var projectName = encodeURIComponent("All-Projects");
     hideAllAlerts();
+    var requestBody = {
+      action: command,
+      dashboard_name: $("#input-dashboard-name").val()
+    };
     $.ajax({
       type : "POST",
       url : `/a/projects/${projectName}/analytics-wizard~server`,
       dataType: 'application/json',
       // Initially project-dashboard is a 1 to 1 relationship
-      data: "{'action': '" + command + "'}",
+      data: JSON.stringify(requestBody),
       contentType:"application/json; charset=utf-8",
       // Need to catch the status code since Gerrit doesn't return
       // a well formed JSON, hence Ajax treats it as an error
@@ -99,7 +131,7 @@ function dashboardService(command) {
 }
 
 function checkStatusRequest() {
-    var projectName = encodeURIComponent($("#input-project-name").val());
+    var projectName = encodeURIComponent("All-Projects");
     $.ajax({
       type : "GET",
       url : `/a/projects/${projectName}/analytics-wizard~status`,
@@ -119,6 +151,11 @@ function checkStatusRequest() {
 }
 
 $(document).ready(function () {
+  $(".dropdown-menu li a").click(function(){
+    $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
+    $(this).parents(".dropdown").find('.btn').val($(this).data('value'));
+  });
+  $('[data-toggle="tooltip"]').tooltip();
   $.ajaxSetup({
       dataFilter: function(data, type) {
         //Strip out Gerrit API prefix
@@ -139,3 +176,4 @@ $(document).ready(function () {
       }
   });
 });
+

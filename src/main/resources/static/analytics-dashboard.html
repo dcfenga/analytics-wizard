@@ -6,9 +6,11 @@
 
     <link rel="stylesheet" href="css/analyticswizard.css">
     <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script type='text/javascript' src='js/popper.min.js'></script>
     <script type='text/javascript' src='js/jquery-3.3.1.min.js'></script>
     <script type='text/javascript' src="js/bootstrap.min.js"></script>
     <script type='text/javascript' src='js/analyticswizard.js'></script>
+    <script type='text/javascript' src='js/bootstrap-waitingfor.min.js'></script>
 </head>
 <body>
 <!--div.container start -->
@@ -16,14 +18,73 @@
     <div class="page-header">
         <h1>Dashboard analytics wizard</h1>
     </div>
-    <div class="center">
-        Project name: <input id="input-project-name" type="text">
+    <hr style="border-width:3px;">
+    <div class="row">
+        <div class="col-lg-2">
+            <label >Dashboard name</label>
+        </div>
+        <div class="col-lg-2    ">
+            <input data-toggle="tooltip" title="Dashboard name" id="input-dashboard-name" type="text" required="true">
+        </div>
     </div>
-    <div id="config-section" hidden>
-        <div id="config-file">Config file: </div>
+    <hr>
+    <div class="row">
+        <div class="col-lg-2">
+            <label >Project prefix</label>
+        </div>
+        <div class="col-lg-3">
+            <input data-toggle="tooltip" title="Prefix of the projects to import, not a regular expression. I.e.: the 'gerrit/' prefix will import all the projects starting with 'gerrit/'" id="input-project-prefix" type="text">
+        </div>
+        <div class="col-lg-4">
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="aggregate" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    Aggregation type
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="aggregate">
+                    <li><a href="#" data-value="email">E-Mail Only</a></li><span class="caret"></span>
+                    <li><a href="#" data-value="email_hour">Email per hour</a></li>
+                    <li><a href="#" data-value="email_day">Email per day</a></li>
+                    <li><a href="#" data-value="email_month">Email per month</a></li>
+                    <li><a href="#" data-value="email_year">Email per year</a></li>
+                </ul>
+            </div>
+        </div>
+
     </div>
-    <br>
-    <input type="button" class="btn btn-primary" value="Create dashboard configuration" onClick="submitDetailsForm()"/>
+    <hr>
+    <div class="row">
+        <div class="col-lg-2">
+            <label>Data time-frame</label>
+        </div>
+        <div class="col-lg-3">
+            <label >Since</label>
+            <input data-toggle="tooltip" title="Data collected from date" id="since" type="date" name="since" min="1000-01-01" max="3000-12-31" class="form-control">
+        </div>
+        <div class="col-lg-3">
+            <label >Until</label>
+            <input data-toggle="tooltip" title="Data collected to date" id="until" type="date" name="until" min="1000-01-01" max="3000-12-31" class="form-control">
+        </div>
+    </div>
+
+
+    <hr>
+    <div class="row">
+        <div class="col-lg-1">
+            <label >Username</label>
+        </div>
+        <div class="col-lg-3">
+            <input data-toggle="tooltip" title="Gerrit API Username" id="username" type="text">
+        </div>
+        <div class="col-lg-1">
+            <label >Password</label>
+        </div>
+        <div class="col-lg-3">
+            <input data-toggle="tooltip" title="Gerrit API Password" id="password" type="password" placeholder="Password">
+        </div>
+    </div>
+
+    <hr>
+    <input type="button" class="btn btn-primary" value="Create dashboard" onClick="submitDetailsForm()"/>
     <br><br>
     <div id="success-alert" class="alert alert-success alert-trim" role="alert" style="display: none;"></div>
     <div id="error-alert" class="alert-danger alert-trim" role="alert" style="display: none;"></div>
