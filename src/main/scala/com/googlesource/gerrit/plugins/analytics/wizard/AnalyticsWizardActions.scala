@@ -58,7 +58,8 @@ class PutAnalyticsStack @Inject()(@PluginData val dataPath: Path,
             AnalyticDashboardSetup(
               input.dashboardName,
               dataPath.resolve(s"docker-compose.${input.dashboardName}.yaml"),
-              gerritLocalUrl
+              gerritLocalUrl,
+              etlConfig
             ).createDashboardSetupFile()
             Response.created(s"Dashboard configuration created for $encodedName!")
           case Failure(exception) =>

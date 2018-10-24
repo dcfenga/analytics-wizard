@@ -17,6 +17,7 @@ import java.net.URL
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+import enumeratum.EnumEntry.Snakecase
 import enumeratum._
 
 import scala.util.{Failure, Success, Try}
@@ -31,7 +32,7 @@ case class ETLConfig(aggregate: AggregationType,
                      username: Option[String],
                      password: Option[String])
 
-sealed trait AggregationType extends EnumEntry
+sealed trait AggregationType extends EnumEntry with Snakecase
 object AggregationType extends Enum[AggregationType] {
   val values = findValues
 
@@ -92,7 +93,7 @@ object ETLConfig {
   private def validateAggregate(
       value: String): Either[AggregateValidationError, AggregationType] = {
     val maybeAggregate =
-      AggregationType.withNameInsensitiveOption(Option(value).getOrElse("email").replace("_", ""))
+      AggregationType.withNameInsensitiveOption(Option(value).getOrElse("email"))
     Either.cond(maybeAggregate.isDefined, maybeAggregate.get, AggregateValidationError(value))
   }
 }

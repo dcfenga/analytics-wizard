@@ -17,6 +17,8 @@ import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Path}
 
+import com.googlesource.gerrit.plugins.analytics.wizard.model.ETLConfig
+
 trait ConfigWriter {
   def write(outputPath: Path, out: String)
 }
@@ -27,8 +29,10 @@ class ConfigWriterImpl extends ConfigWriter {
   }
 }
 
-case class AnalyticDashboardSetup(name: String, dockerComposeYamlPath: Path, gerritLocalUrl: URL)(
-    implicit val writer: ConfigWriter) {
+case class AnalyticDashboardSetup(name: String,
+                                  dockerComposeYamlPath: Path,
+                                  gerritLocalUrl: URL,
+                                  etlConfig: ETLConfig)(implicit val writer: ConfigWriter) {
 
   // Docker doesn't like container names with '/', hence the replace with '-'
   // Furthermore timestamp has been added to avoid conflicts among container names, i.e.:
@@ -36,6 +40,17 @@ case class AnalyticDashboardSetup(name: String, dockerComposeYamlPath: Path, ger
   // would be potentially in conflict with another 'foo-bar' project's one
   private val sanitisedName =
     s"${name.replace("/", "-")}-${System.currentTimeMillis}"
+  private def analyticsArgs: String = {
+    val args = List(
+      Since(etlConfig.since.map(_.toString)),
+      Until(etlConfig.until.map(_.toString)),
+      ProjectPrefix(etlConfig.projectPrefix),
+      Aggregate(Some(etlConfig.aggregate.entryName)),
+      Password(etlConfig.password),
+      Username(etlConfig.username)
+    ).filter(_.value.isDefined) mkString " "
+    s"$args --writeNotProcessedEventsTo file:///tmp/failed-events -e gerrit/analytics"
+  }
   private val dockerComposeTemplate = {
     s"""
        |version: '3'
@@ -48,7 +63,7 @@ case class AnalyticDashboardSetup(name: String, dockerComposeYamlPath: Path, ger
        |    environment:
        |      - ES_HOST=elasticsearch
        |      - GERRIT_URL=${gerritLocalUrl.getProtocol}://gerrit:${gerritLocalUrl.getPort}
-       |      - ANALYTICS_ARGS=--since 2000-06-01 --aggregate email_hour --writeNotProcessedEventsTo file:///tmp/failed-events -e gerrit/analytics
+       |      - ANALYTICS_ARGS=$analyticsArgs
        |    networks:
        |      - ek
        |    links:
@@ -101,4 +116,29 @@ case class AnalyticDashboardSetup(name: String, dockerComposeYamlPath: Path, ger
 
 object AnalyticDashboardSetup {
   implicit val writer = new ConfigWriterImpl()
+}
+
+sealed trait AnalyticsOption {
+  val name: String
+  val value: Option[String]
+
+  override def toString: String = s"$name ${value.getOrElse("")}"
+}
+case class Since(value: Option[String]) extends AnalyticsOption {
+  val name = "--since"
+}
+case class Until(value: Option[String]) extends AnalyticsOption {
+  val name = "--until"
+}
+case class ProjectPrefix(value: Option[String]) extends AnalyticsOption {
+  val name = "--prefix"
+}
+case class Aggregate(value: Option[String]) extends AnalyticsOption {
+  val name = "--aggregate"
+}
+case class Password(value: Option[String]) extends AnalyticsOption {
+  val name = "--password"
+}
+case class Username(value: Option[String]) extends AnalyticsOption {
+  val name = "--username"
 }
