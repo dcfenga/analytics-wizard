@@ -1,0 +1,34 @@
+@startuml
+
+actor User
+box "Gerrit installation" #LightYellow
+  participant WizardPlugin
+  participant AnalyticsPlugin
+end box
+box "Data extraction and visualization"
+  participant ETLJob
+  participant ElasticSearch
+  participant Kibana
+end box
+
+User -> WizardPlugin: CreateDashboard
+WizardPlugin --> User: Ok
+WizardPlugin -> ETLJob: ExtractData
+ETLJob --> WizardPlugin: Ok
+activate ETLJob
+ETLJob -> AnalyticsPlugin: GetCommitsInfo
+activate AnalyticsPlugin
+AnalyticsPlugin -> AnalyticsPlugin: AggreagateData
+AnalyticsPlugin -> ETLJob: CommitsInfo
+deactivate AnalyticsPlugin
+ETLJob -> ETLJob: ProcessCommitsInfo
+ETLJob -> ElasticSearch: StoreCommitsInfo
+deactivate ETLJob
+...
+...
+User -> Kibana: GetDashbaord
+Kibana -> ElasticSearch: GetDataForDashboard
+ElasticSearch -> Kibana: DataForDashboard
+Kibana -> User: Dashboard
+
+@enduml
