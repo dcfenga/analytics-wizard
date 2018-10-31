@@ -28,13 +28,16 @@ function hideAllAlerts() {
 }
 
 function waitForImport() {
-  hideAllAlerts();
-  waitingDialog.show(
-  'Importing analytics data. Be patient, this might take a while...', {
-    dialogSize: 'lg',
-    progressType: 'success'
-  });
+  showLoading('Importing analytics data. Be patient, this might take a while...', 'success');
   pollStatusEndpoint();
+}
+
+function showLoading(text, type) {
+  hideAllAlerts();
+  waitingDialog.show(text, {
+    dialogSize: 'lg',
+    progressType: type
+  });
 }
 
 function pollStatusEndpoint() {
@@ -110,6 +113,7 @@ function dashboardService(command) {
       action: command,
       dashboard_name: $("#input-dashboard-name").val()
     };
+    showLoading('Getting docker containers ready. Be patient, this might take a while...', 'info');
     $.ajax({
       type : "POST",
       url : `/a/projects/${projectName}/analytics-wizard~server`,
@@ -124,6 +128,7 @@ function dashboardService(command) {
       },
       error: function(jqXHR, textStatus, errorThrown) {
         if(jqXHR.status != 201) {
+          waitingDialog.hide();
           showFailureWithText("Error starting your dashboard: " + errorThrown)
         }
       }
