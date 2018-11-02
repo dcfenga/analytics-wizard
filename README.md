@@ -30,7 +30,7 @@ cp /tmp/analytics-wizard.jar /usr/local/gerrit/plugins
 ```
 
 # How to use it
-Once the plugin is installed and you are logged in Gerrit browse to this url: [https://<you_gerrit_url>/plugins/analytics-wizard/static/analytics-dashboard.html]()
+Once you are logged in Gerrit you can access the dashboard configuration via the top menu (`Analytics Wizard > Configure Dashboard`).
 
 You will land on this screen:
 

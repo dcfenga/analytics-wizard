@@ -13,7 +13,9 @@
 // limitations under the License.
 package com.googlesource.gerrit.plugins.analytics.wizard
 
+import com.google.gerrit.extensions.registration.DynamicSet
 import com.google.gerrit.extensions.restapi.RestApiModule
+import com.google.gerrit.extensions.webui.TopMenu
 import com.google.gerrit.server.project.ProjectResource.PROJECT_KIND
 import com.google.inject.AbstractModule
 
@@ -22,6 +24,8 @@ class Module extends AbstractModule {
   override protected def configure() {
     install(new RestApiModule() {
       override protected def configure() = {
+
+        DynamicSet.bind(binder, classOf[TopMenu]).to(classOf[AnalyticsWizardTopMenu])
 
         put(PROJECT_KIND, "stack").to(classOf[PutAnalyticsStack])
 
