@@ -74,4 +74,11 @@ sbt assembly
 
 This will compile, test and package the plugin artifact, which can be found in `./target/scala-2.11/analytics-wizard.jar`.
 
+# Caveats
 
+* **Virtual Memory settings**: run `sysctl -w vm.max_map_count=262144` from command line, if you are using a Linux box
+and the dashboard creation fails with a similar error:
+
+```bash
+max virtual memory areas vm.max_map_count [XXXXX] is too low, increase to at least [262144]
+```
