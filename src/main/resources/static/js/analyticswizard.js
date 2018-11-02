@@ -44,10 +44,50 @@ function pollStatusEndpoint() {
     setTimeout(function () { checkStatusRequest()}, 5000);
 }
 
+function baseURL() {
+    return location.protocol + "//" + location.hostname;
+}
+
+function getKibanaIndex(success) {
+    var elasticSearchURL = baseURL() + ":9200/.kibana/_search?q=_type:dashboard&stored_fields=_id";
+
+    $.ajax({
+        type : "GET",
+        crossDomain: true,
+        url : elasticSearchURL,
+        dataType: 'json',
+        contentType:"application/json; charset=utf-8"
+    })
+    .done(function ( json ) {
+        var kibanaIndex = json["hits"]["hits"][0]["_id"];
+        success("dashboard/" + kibanaIndex);
+    })
+    .fail(function ( jqxhr, textStatus, error ) {
+        console.error("Error extracting kibana index: " + textStatus + ", " + error);
+        console.log("Defaulting to all dashboards");
+        success("dashboards");
+    });
+}
+
 function wizardGoToDashboard() {
     waitingDialog.hide();
-    var redirectLocation = location.protocol + "//" + location.hostname + ":5601/app/kibana#/dashboards";
-    window.location.replace(redirectLocation);
+
+    getKibanaIndex( function (kibanaIndex) {
+        var redirectLocation = baseURL() + ":5601/app/kibana#/" + kibanaIndex + "?" + kibanaTimeframeParams();
+        window.location.replace(redirectLocation);
+    });
+}
+
+function kibanaTimeframeParams() {
+    var from = $("#since").val()
+        || new Date(new Date().setFullYear(new Date().getFullYear() - 10)).toISOString();
+
+    var to = $("#until").val()
+        || new Date(Date.now()).toISOString();
+
+    var timeFrame = "_g=(time:(from:'"+from+"',to:'"+to+"',mode:absolute))";
+
+    return timeFrame;
 }
 
 function getRequestBody() {

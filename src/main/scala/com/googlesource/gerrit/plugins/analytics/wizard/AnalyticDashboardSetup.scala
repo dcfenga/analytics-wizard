@@ -99,6 +99,9 @@ case class AnalyticDashboardSetup(name: String,
        |      - http.host=0.0.0.0
        |      - network.host=_site_
        |      - http.publish_host=_site_
+       |      - http.cors.allow-origin=*
+       |      - http.cors.enabled=true
+       |
        |    ports:
        |      - "9200:9200"
        |      - "9300:9300"
