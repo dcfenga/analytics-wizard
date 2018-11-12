@@ -49,7 +49,7 @@ case class AnalyticDashboardSetup(name: String,
       Password(etlConfig.password),
       Username(etlConfig.username)
     ).filter(_.value.isDefined) mkString " "
-    s"$args --writeNotProcessedEventsTo file:///tmp/failed-events -e gerrit/analytics"
+    s"$args --writeNotProcessedEventsTo file:///tmp/failed-events -e gerrit"
   }
   private val dockerComposeTemplate = {
     s"""
