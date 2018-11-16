@@ -135,7 +135,7 @@ function submitDetailsForm() {
         // Need to catch the status code since Gerrit doesn't return
         // a well formed JSON, hence Ajax treats it as an error
         statusCode: {
-          201: dashboardService('up')
+          201: function () { dashboardService('up'); }
         },
         error: function(jqXHR, textStatus, errorThrown) {
           if(jqXHR.status != 201) {
@@ -164,7 +164,7 @@ function dashboardService(command) {
       // Need to catch the status code since Gerrit doesn't return
       // a well formed JSON, hence Ajax treats it as an error
       statusCode: {
-        201: waitForImport
+        201: function () { waitForImport(); }
       },
       error: function(jqXHR, textStatus, errorThrown) {
         if(jqXHR.status != 201) {
@@ -183,8 +183,8 @@ function checkStatusRequest() {
       dataType: 'application/json',
       contentType:"application/json; charset=utf-8",
       statusCode: {
-        202: pollStatusEndpoint,
-        204: wizardGoToDashboard
+        202: function() { pollStatusEndpoint(); },
+        204: function() { wizardGoToDashboard(); }
       },
       error: function(jqXHR, textStatus, errorThrown) {
         if(jqXHR.status != 202 && jqXHR.status != 204) {
