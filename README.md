@@ -39,7 +39,6 @@ You will land on this screen:
 Different parameters can be configured:
 * **Dashboard name** (required): name of the dashboard you are about to create
 * **Projects prefix** (optional): prefix of the projects you want to import, i.e.: to import all the projects under the Gerrit namespace, you can specify `gerrit/`. *Note: It is not a regular expression.*
-* **Aggregation type** (required): the data can be aggregated by `email only`, by `email per hour`, by `email per day`, by `email per month` or by `email per year`.
 * **Date time-frame** (optional): time window you want to collect data about
 * **Username/Password** (optional): credentials for Gerrit API, if basic auth is needed
 

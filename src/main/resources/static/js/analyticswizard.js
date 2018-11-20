@@ -92,7 +92,7 @@ function kibanaTimeframeParams() {
 
 function getRequestBody() {
   var etlConfigRaw = {
-    aggregate: $("#aggregate").val(),
+    aggregate: "email_hour",
     since: $("#since").val(),
     until: $("#until").val(),
     project_prefix: $("#input-project-prefix").val(),
