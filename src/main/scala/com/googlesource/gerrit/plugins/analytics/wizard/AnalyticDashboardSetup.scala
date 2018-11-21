@@ -56,10 +56,11 @@ case class AnalyticDashboardSetup(name: String,
        |version: '3'
        |services:
        |
-       |  spark-gerrit-analytics-etl:
+       |  gerrit-analytics-etl-gitcommits:
        |    extra_hosts:
        |      - gerrit:${gerritLocalUrl.getHost}
-       |    image: gerritforge/spark-gerrit-analytics-etl:latest
+       |    image: gerritforge/gerrit-analytics-etl-gitcommits:latest
+       |    container_name: gerrit-analytics-etl-gitcommits
        |    environment:
        |      - ES_HOST=elasticsearch
        |      - GERRIT_URL=${gerritLocalUrl.getProtocol}://gerrit:${gerritLocalUrl.getPort}

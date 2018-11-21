@@ -101,7 +101,7 @@ class GetAnalyticsStackStatus @Inject()(@PluginData val dataPath: Path,
                                         val dockerClientProvider: DockerClientProvider)
     extends RestReadView[ProjectResource] {
   override def apply(resource: ProjectResource): Response[String] = {
-    val containerName = "analytics-wizard_spark-gerrit-analytics-etl_1"
+    val containerName = "gerrit-analytics-etl-gitcommits"
     responseFromContainerInfo(dockerClientProvider.client.inspectContainer(containerName))
   }
   private def responseFromContainerInfo(containerInfo: ContainerInfo) = {
