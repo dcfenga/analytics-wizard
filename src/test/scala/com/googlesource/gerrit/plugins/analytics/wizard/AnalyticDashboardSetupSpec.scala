@@ -27,7 +27,7 @@ class AnalyticDashboardSetupSpec extends FlatSpec with Matchers {
       AnalyticDashboardSetup("aProject",
                              composeYamlFile,
                              new URL("http://gerrit_local_ip_address:8080"),
-                             ETLConfig(Email, None, None, None, None, None, None, None, None))
+                             ETLConfig(Email, None, None, None, None, None, None, None))
     ads.createDashboardSetupFile()
     gotFilename shouldBe Some(composeYamlFile)
   }
@@ -60,7 +60,6 @@ class AnalyticDashboardSetupSpec extends FlatSpec with Matchers {
                   Some(prefix),
                   Some(localDateSince),
                   Some(localDateUntil),
-                  None,
                   None,
                   None,
                   Some(username),

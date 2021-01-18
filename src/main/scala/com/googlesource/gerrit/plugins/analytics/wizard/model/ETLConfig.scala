@@ -27,7 +27,6 @@ case class ETLConfig(aggregate: AggregationType,
                      since: Option[LocalDate],
                      until: Option[LocalDate],
                      eventsUrl: Option[URL],
-                     writeNotProcessedEventsTo: Option[URL],
                      emailAliasesPath: Option[String],
                      username: Option[String],
                      password: Option[String])
@@ -48,7 +47,6 @@ object ETLConfig {
     for {
       s  <- validateLocalDate("since", raw.since).right
       u  <- validateLocalDate("until", raw.until).right
-      w  <- validateUrl("writeNotProcessedEventsTo", raw.writeNotProcessedEventsTo).right
       eu <- validateUrl("eventsUrl", raw.eventsUrl).right
       a  <- validateAggregate(raw.aggregate).right
     } yield
@@ -58,7 +56,6 @@ object ETLConfig {
         since = s,
         until = u,
         eventsUrl = eu,
-        writeNotProcessedEventsTo = w,
         emailAliasesPath = Option(raw.emailAliasesPath),
         username = Option(raw.username),
         password = Option(raw.password)

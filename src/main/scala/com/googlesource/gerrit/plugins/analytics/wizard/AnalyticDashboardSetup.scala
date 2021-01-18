@@ -49,7 +49,7 @@ case class AnalyticDashboardSetup(name: String,
       Password(etlConfig.password),
       Username(etlConfig.username)
     ).filter(_.value.isDefined) mkString " "
-    s"$args --writeNotProcessedEventsTo file:///tmp/failed-events -e gitcommits"
+    s"$args -e gitcommits"
   }
   private val dockerComposeTemplate = {
     s"""
@@ -73,7 +73,7 @@ case class AnalyticDashboardSetup(name: String,
        |      - elasticsearch
        |
        |  dashboard-importer:
-       |    image: gerritforge/analytics-dashboard-importer:latest
+       |    image: gerritforge/analytics-dashboard-importer:3.3.1-1
        |    networks:
        |      - ek
        |    links:

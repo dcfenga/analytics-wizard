@@ -19,6 +19,5 @@ case class ETLConfigRaw(aggregate: String,
                         until: String,
                         eventsUrl: String,
                         emailAliasesPath: String,
-                        writeNotProcessedEventsTo: String,
                         username: String,
                         password: String)

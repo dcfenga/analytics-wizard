@@ -31,7 +31,6 @@ class ETLConfigSpec extends FlatSpec with Matchers {
     until = "2018-10-13",
     eventsUrl = "file:///tmp/gerrit-events-export.json",
     emailAliasesPath = "/tmp/path",
-    writeNotProcessedEventsTo = "file://tmp/myfile.json",
     username = "dss",
     password = "dsd"
   )
@@ -44,7 +43,6 @@ class ETLConfigSpec extends FlatSpec with Matchers {
       since = Some(LocalDate.of(2018, 10, 10)),
       until = Some(LocalDate.of(2018, 10, 13)),
       eventsUrl = Some(new URL(etlConfigRaw.eventsUrl)),
-      writeNotProcessedEventsTo = Some(new URL(etlConfigRaw.writeNotProcessedEventsTo)),
       emailAliasesPath = Some(etlConfigRaw.emailAliasesPath),
       username = Some(etlConfigRaw.username),
       password = Some(etlConfigRaw.password)
@@ -58,7 +56,6 @@ class ETLConfigSpec extends FlatSpec with Matchers {
                           since = null,
                           until = null,
                           eventsUrl = null,
-                          writeNotProcessedEventsTo = null,
                           emailAliasesPath = null,
                           username = null,
                           password = null))
@@ -69,7 +66,6 @@ class ETLConfigSpec extends FlatSpec with Matchers {
       since = None,
       until = None,
       eventsUrl = None,
-      writeNotProcessedEventsTo = None,
       emailAliasesPath = None,
       username = None,
       password = None
@@ -85,7 +81,6 @@ class ETLConfigSpec extends FlatSpec with Matchers {
           since = null,
           until = null,
           eventsUrl = null,
-          writeNotProcessedEventsTo = null,
           emailAliasesPath = null,
           username = null,
           password = null
@@ -97,7 +92,6 @@ class ETLConfigSpec extends FlatSpec with Matchers {
       since = None,
       until = None,
       eventsUrl = None,
-      writeNotProcessedEventsTo = None,
       emailAliasesPath = None,
       username = None,
       password = None
@@ -124,17 +118,6 @@ class ETLConfigSpec extends FlatSpec with Matchers {
     error.value shouldBe invalidDate
     error.parameter shouldBe "until"
     error.cause shouldBe a[DateTimeParseException]
-  }
-
-  it should "fail validation for invalid 'writeNotProcessedEventsTo' parameter" in {
-    val invalidUrl = "randomString"
-    val error = ETLConfig
-      .fromRaw(etlConfigRaw.copy(writeNotProcessedEventsTo = invalidUrl))
-      .left
-      .value
-    error.value shouldBe invalidUrl
-    error.parameter shouldBe "writeNotProcessedEventsTo"
-    error.cause shouldBe a[MalformedURLException]
   }
 
   it should "fail validation for invalid 'eventsPath' parameter" in {

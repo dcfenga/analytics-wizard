@@ -1,6 +1,6 @@
 enablePlugins(GitVersioning)
 
-val gerritApiVersion = "2.16"
+val gerritApiVersion = "3.2.3"
 val pluginName       = "analytics-wizard"
 
 scalaVersion := "2.11.12"

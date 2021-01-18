@@ -93,7 +93,7 @@ class PostAnalyticsStack @Inject()(@PluginData val dataPath: Path)
     ps.exitValue match {
       case 0 => Response.created(output)
       case _ =>
-        throw new RestApiException(s"Failed with exit code: ${ps.exitValue} - $output")
+        throw RestApiException.wrap(s"Failed with exit code: ${ps.exitValue} - $output", null)
     }
   }
 }
@@ -107,13 +107,13 @@ class GetAnalyticsStackStatus @Inject()(@PluginData val dataPath: Path,
   private def responseFromContainerInfo(containerInfo: ContainerInfo) = {
     containerInfo.state match {
       case s if s.exitCode != 0 =>
-        throw new RestApiException(s"Data import failed")
+        throw RestApiException.wrap(s"Data import failed", null)
       case s if s.running =>
         Response.withStatusCode(202, "processing")
       case s if s.status == "exited" =>
         //Spark ETL job exited successfully
         Response.withStatusCode(204, "finished")
-      case _ => throw new RestApiException(s"Case not handled")
+      case _ => throw RestApiException.wrap(s"Case not handled", null)
     }
   }
 }
