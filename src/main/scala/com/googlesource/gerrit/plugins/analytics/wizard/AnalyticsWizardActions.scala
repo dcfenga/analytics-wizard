@@ -82,6 +82,7 @@ class PostAnalyticsStack @Inject()(@PluginData val dataPath: Path)
       "-f",
       s"${dataPath.toFile.getAbsolutePath}/docker-compose.${encodedName}.yaml",
       input.action.toLowerCase,
+      "--force-recreate",
       "--detach"
     )
     pb.redirectErrorStream(true)

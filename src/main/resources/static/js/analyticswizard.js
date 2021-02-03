@@ -167,10 +167,16 @@ function dashboardService(command) {
         201: function () { waitForImport(); }
       },
       error: function(jqXHR, textStatus, errorThrown) {
-        if(jqXHR.status != 201) {
-          waitingDialog.hide();
-          showFailureWithText("Error starting your dashboard: " + errorThrown)
+        if(jqXHR.status == 0) {
+            waitForImport();
+        } else {
+            waitingDialog.hide();
+            showFailureWithText("Error starting your dashboard: " + errorThrown)
         }
+        //if(jqXHR.status != 201) {
+          //waitingDialog.hide();
+          //showFailureWithText("Error starting your dashboard: " + errorThrown)
+        //}
       }
     });
 }

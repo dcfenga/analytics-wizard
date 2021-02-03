@@ -59,7 +59,7 @@ case class AnalyticDashboardSetup(name: String,
        |  gerrit-analytics-etl-gitcommits:
        |    extra_hosts:
        |      - gerrit:${gerritLocalUrl.getHost}
-       |    image: gerritforge/gerrit-analytics-etl-gitcommits:latest
+       |    image: gerritforge/gerrit-analytics-etl-gitcommits:1.0-61-g2220c4a-SNAPSHOT
        |    container_name: gerrit-analytics-etl-gitcommits
        |    environment:
        |      - ES_HOST=elasticsearch
@@ -81,7 +81,7 @@ case class AnalyticDashboardSetup(name: String,
        |      - kibana
        |
        |  kibana:
-       |    image: gerritforge/analytics-kibana:latest
+       |    image: gerritforge/analytics-kibana:5.5.2-1
        |    container_name: "kibana-for-${sanitisedName}-project"
        |    networks:
        |      - ek
@@ -91,7 +91,7 @@ case class AnalyticDashboardSetup(name: String,
        |      - "5601:5601"
        |
        |  elasticsearch:
-       |    image: gerritforge/analytics-elasticsearch:latest
+       |    image: gerritforge/analytics-elasticsearch:5.5.2-1
        |    container_name: "es-for-${sanitisedName}-project"
        |    networks:
        |      - ek
