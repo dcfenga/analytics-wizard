@@ -41,7 +41,7 @@ function showLoading(text, type) {
 }
 
 function pollStatusEndpoint() {
-    setTimeout(function () { checkStatusRequest()}, 5000);
+    setTimeout(function () { checkStatusRequest()}, 50000);
 }
 
 function baseURL() {
@@ -75,6 +75,7 @@ function wizardGoToDashboard() {
     getKibanaIndex( function (kibanaIndex) {
         var redirectLocation = baseURL() + ":5601/app/kibana#/" + kibanaIndex + "?" + kibanaTimeframeParams();
         window.location.replace(redirectLocation);
+        //window.open(redirectLocation);
     });
 }
 
