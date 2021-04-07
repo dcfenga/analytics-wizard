@@ -18,21 +18,12 @@ import java.nio.file.Path
 
 import com.google.common.io.ByteStreams
 import com.google.gerrit.extensions.annotations.PluginData
-import com.google.gerrit.extensions.restapi.{
-  Response,
-  RestApiException,
-  RestModifyView,
-  RestReadView
-}
+import com.google.gerrit.extensions.restapi.{Response, RestApiException, RestModifyView, RestReadView}
 import com.google.gerrit.server.config.GerritServerConfig
 import com.google.gerrit.server.project.ProjectResource
 import com.google.inject.{ImplementedBy, Inject}
 import com.googlesource.gerrit.plugins.analytics.wizard.AnalyticDashboardSetup.writer
-import com.googlesource.gerrit.plugins.analytics.wizard.model.{
-  ETLConfig,
-  ETLConfigRaw,
-  ETLConfigValidationError
-}
+import com.googlesource.gerrit.plugins.analytics.wizard.model.{ETLConfig, ETLConfigRaw, ETLConfigValidationError}
 import com.googlesource.gerrit.plugins.analytics.wizard.utils._
 import com.spotify.docker.client.messages.ContainerInfo
 import com.spotify.docker.client.{DefaultDockerClient, DockerClient}
@@ -118,6 +109,39 @@ class GetAnalyticsStackStatus @Inject()(@PluginData val dataPath: Path,
     }
   }
 }
+
+class GetAnalyticsStack @Inject()(@PluginData val dataPath: Path, @GerritServerConfig gerritConfig: Config)
+  extends RestModifyView[ProjectResource, Input] {
+
+  override def apply(resource: ProjectResource, input: Input): Response[String] = {
+    val projectName = resource.getName
+    val encodedName = AnalyticsWizardActions.encodedName(projectName)
+    val etlConfigE: Either[ETLConfigValidationError, ETLConfig] = ETLConfig.fromRaw(input.etlConfig)
+    etlConfigE.fold(
+      configError =>
+        Response.withStatusCode(400,
+          s"Cannot create dashboard configuration: ${configError.message}"),
+      etlConfig => {
+        val configHelper = new GerritConfigHelper(gerritConfig) with LocalAddressGetter
+        configHelper.getGerritLocalAddress match {
+          case Success(gerritLocalUrl) =>
+            AnalyticDashboardSetup(
+              input.dashboardName,
+              dataPath.resolve(s"docker-compose.${input.dashboardName}.yaml"),
+              gerritLocalUrl,
+              etlConfig
+            ).createDashboardSetupFile()
+            Response.created(s"Dashboard configuration created for $encodedName!")
+          case Failure(exception) =>
+            Response.withStatusCode(
+              500,
+              s"Cannot create dashboard configuration - '${exception.getMessage}'")
+        }
+      }
+    )
+  }
+}
+
 object AnalyticsWizardActions {
   // URLEncoder could potentially throw UnsupportedEncodingException,
   // but UTF-8 will *always* be resolved, otherwise, Gerrit wouldn't work at all

@@ -16,65 +16,104 @@
 <!--div.container start -->
 <div class="container">
     <div class="page-header">
-        <h1>Dashboard analytics wizard</h1>
+        <h1>Dashboard Analytics Wizard</h1>
     </div>
-    <hr style="border-width:3px;">
+    <hr>
     <div class="row">
         <div class="col-lg-2">
-            <label >Dashboard name</label>
+            <label>Dashboard Name</label>
         </div>
-        <div class="col-lg-2    ">
+        <div class="col-lg-3">
             <input data-toggle="tooltip" title="Dashboard name" id="input-dashboard-name" type="text" required="true">
         </div>
     </div>
+
     <hr>
     <div class="row">
         <div class="col-lg-2">
-            <label >Project prefix</label>
+            <label>Project Prefix</label>
         </div>
         <div class="col-lg-3">
-            <input data-toggle="tooltip" title="Prefix of the projects to import, not a regular expression. I.e.: the 'gerrit/' prefix will import all the projects starting with 'gerrit/'" id="input-project-prefix" type="text">
+            <input data-toggle="tooltip"
+                   title="Prefix of the projects to import, not a regular expression. I.e.: the 'gerrit/' prefix will import all the projects starting with 'gerrit/'"
+                   id="input-project-prefix" type="text" required="true">
         </div>
-
     </div>
+
     <hr>
     <div class="row">
         <div class="col-lg-2">
-            <label>Data time-frame</label>
+            <label>Credential</label>
         </div>
         <div class="col-lg-3">
-            <label >Since</label>
-            <input data-toggle="tooltip" title="Data collected from date" id="since" type="date" name="since" min="1000-01-01" max="3000-12-31" class="form-control">
+            <label>Username</label>
+            <input data-toggle="tooltip"
+                   title="Gerrit API Username: ETL job is independent from Gerrit, hence it needs credentials to access its API when basic auth is enabled"
+                   id="username" type="text" required="true">
         </div>
         <div class="col-lg-3">
-            <label >Until</label>
-            <input data-toggle="tooltip" title="Data collected to date" id="until" type="date" name="until" min="1000-01-01" max="3000-12-31" class="form-control">
+            <label>Password</label>
+            <input data-toggle="tooltip"
+                   title="Gerrit API Password: ETL job is independent from Gerrit, hence it needs credentials to access its API when basic auth is enabled"
+                   id="password" type="password" placeholder="Password" required="true">
         </div>
     </div>
 
-
     <hr>
     <div class="row">
-        <div class="col-lg-1">
-            <label >Username</label>
+        <div class="col-lg-2">
+            <label>Data Time-frame</label>
         </div>
         <div class="col-lg-3">
-            <input data-toggle="tooltip" title="Gerrit API Username: ETL job is independent from Gerrit, hence it needs credentials to access its API when basic auth is enabled" id="username" type="text">
-        </div>
-        <div class="col-lg-1">
-            <label >Password</label>
+            <label>Since</label>
+            <input data-toggle="tooltip" title="Data collected from date" id="since" type="date" name="since"
+                   min="1000-01-01" max="3000-12-31" class="form-control" required="true">
         </div>
         <div class="col-lg-3">
-            <input data-toggle="tooltip" title="Gerrit API Password: ETL job is independent from Gerrit, hence it needs credentials to access its API when basic auth is enabled" id="password" type="password" placeholder="Password">
+            <label>Until</label>
+            <input data-toggle="tooltip" title="Data collected to date" id="until" type="date" name="until"
+                   min="1000-01-01" max="3000-12-31" class="form-control" required="true">
         </div>
     </div>
 
     <hr>
     <input type="button" class="btn btn-primary" value="Create dashboard" onClick="submitDetailsForm()"/>
-    <br><br>
     <div id="success-alert" class="alert alert-success alert-trim" role="alert" style="display: none;"></div>
     <div id="error-alert" class="alert-danger alert-trim" role="alert" style="display: none;"></div>
-    <br><br>
+
+    <hr>
+    <div class="page-header">
+        <h1>Analytics History</h1>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-2">
+            <label>My Analytics</label>
+        </div>
+        <div class="col-lg-3">
+            <input data-toggle="tooltip" title="Filter your analytics by your Username" id="filterstr" type="text"
+                   required="true">
+        </div>
+    </div>
+
+    <div class="row">
+        <table>
+            <thead>
+            <tr>
+                <th>Dashbaord Name</th>
+                <th>Project prefix</th>
+                <th>Sinace</th>
+                <th>Until</th>
+                <th>Username</th>
+                <th>Date</th>
+                <th>Result</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <!--div.container end -->

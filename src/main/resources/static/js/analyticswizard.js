@@ -73,7 +73,11 @@ function wizardGoToDashboard() {
     waitingDialog.hide();
 
     getKibanaIndex( function (kibanaIndex) {
+        alert("kibanaIndex: " + kibanaIndex);
+
         var redirectLocation = baseURL() + ":5601/app/kibana#/" + kibanaIndex + "?" + kibanaTimeframeParams();
+        alert("redirectLocation: " + redirectLocation);
+
         window.location.replace(redirectLocation);
         //window.open(redirectLocation);
     });
@@ -136,11 +140,14 @@ function submitDetailsForm() {
         // Need to catch the status code since Gerrit doesn't return
         // a well formed JSON, hence Ajax treats it as an error
         statusCode: {
-          201: function () { dashboardService('up'); }
+          201: function () {
+              dashboardService('up');
+          }
         },
         error: function(jqXHR, textStatus, errorThrown) {
           if(jqXHR.status != 201) {
-            showFailureWithText("Error creating configuration: " + errorThrown)
+            //showFailureWithText("Error creating configuration: " + errorThrown)
+            showFailureWithText("创建分析配置出错，请联系CI/CD负责人冯道臣：fengdaochen@haier.com," + errorThrown)
           }
         }
       });
@@ -154,7 +161,8 @@ function dashboardService(command) {
       action: command,
       dashboard_name: $("#input-dashboard-name").val()
     };
-    showLoading('Getting docker containers ready. Be patient, this might take a while...', 'info');
+    //showLoading('Preparing analytics environment. Be patient, this might take a while...', 'info');
+    showLoading('正在准备分析环境，请耐心等待...', 'info');
     $.ajax({
       type : "POST",
       url : `/a/projects/${projectName}/analytics-wizard~server`,
@@ -165,19 +173,25 @@ function dashboardService(command) {
       // Need to catch the status code since Gerrit doesn't return
       // a well formed JSON, hence Ajax treats it as an error
       statusCode: {
-        201: function () { waitForImport(); }
+        //201: function () { waitForImport(); }
+        201: function () {
+            waitingDialog.hide()
+            alert('数据分析进行中，请稍后在本页面下方分析历史中查看分析结果！');
+        }
       },
       error: function(jqXHR, textStatus, errorThrown) {
-        if(jqXHR.status == 0) {
-            waitForImport();
-        } else {
-            waitingDialog.hide();
-            showFailureWithText("Error starting your dashboard: " + errorThrown)
-        }
-        //if(jqXHR.status != 201) {
+        //if(jqXHR.status == 0) {
+            //waitForImport();
+        //} else {
+            //waitingDialog.hide();
+            //showFailureWithText("Error starting your dashboard: " + errorThrown)
+        //}
+        if(jqXHR.status != 201) {
           //waitingDialog.hide();
           //showFailureWithText("Error starting your dashboard: " + errorThrown)
-        //}
+          waitingDialog.hide()
+          showFailureWithText("数据分析过程出错，请联系CI/CD负责人冯道臣：fengdaochen@haier.com," + errorThrown)
+        }
       }
     });
 }
@@ -199,6 +213,26 @@ function checkStatusRequest() {
           waitingDialog.hide();
         }
       }
+    });
+}
+
+function getAnalyticsHistory() {
+    var elasticSearchURL = baseURL() + ":9200/analytics/_search";
+
+    alert("elasticSearchURL:" + elasticSearchURL);
+
+    $.ajax({
+      type : "GET",
+      crossDomain: true,
+      url : elasticSearchURL,
+      dataType: 'json',
+      contentType:"application/json; charset=utf-8"
+    })
+    .done(function (json) {
+        alert("analyticsHistroy: " + json)
+    })
+    .fail(function (jqxhr, textStatus, error) {
+        console.error("Error extracting analytics hostory: " + textStatus + ", " + error);
     });
 }
 
@@ -227,5 +261,7 @@ $(document).ready(function () {
         return data;
       }
   });
+
+  getAnalyticsHistory();
 });
 

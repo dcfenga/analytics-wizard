@@ -31,7 +31,9 @@ class Module extends AbstractModule {
 
         post(PROJECT_KIND, "server").to(classOf[PostAnalyticsStack])
 
-        get(PROJECT_KIND, "status").to(classOf[GetAnalyticsStackStatus])
+        get(PROJECT_KIND, "status").to(classOf[GetAnalyticsStack])
+
+        //get(PROJECT_KIND, "status").to(classOf[GetAnalyticsStackStatus])
       }
     })
   }

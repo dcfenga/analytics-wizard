@@ -47,7 +47,8 @@ case class AnalyticDashboardSetup(name: String,
       ProjectPrefix(etlConfig.projectPrefix),
       Aggregate(Some(etlConfig.aggregate.entryName)),
       Password(etlConfig.password),
-      Username(etlConfig.username)
+      Username(etlConfig.username),
+      DashboardName(Option(name))
     ).filter(_.value.isDefined) mkString " "
     s"$args -e gitcommits"
   }
@@ -59,60 +60,15 @@ case class AnalyticDashboardSetup(name: String,
        |  gerrit-analytics-etl-gitcommits:
        |    extra_hosts:
        |      - gerrit:${gerritLocalUrl.getHost}
-       |    image: gerritforge/gerrit-analytics-etl-gitcommits:1.0-61-g2220c4a-SNAPSHOT
-       |    pull_policy: never
+       |    image: gerritforge/gerrit-analytics-etl-gitcommits:1.0-62-g4f7fbeb-SNAPSHOT
        |    container_name: gerrit-analytics-etl-gitcommits
        |    environment:
-       |      - ES_HOST=elasticsearch
+       |      - ES_PORT=9200
+       |      - ES_HOST=10.180.108.98
        |      - GERRIT_URL=${gerritLocalUrl.getProtocol}://gerrit:${gerritLocalUrl.getPort}
        |      - ANALYTICS_ARGS=$analyticsArgs
-       |    networks:
-       |      - ek
-       |    links:
-       |      - elasticsearch
-       |    depends_on:
-       |      - elasticsearch
-       |
-       |  dashboard-importer:
-       |    image: gerritforge/analytics-dashboard-importer:3.3.1-1
-       |    pull_policy: never
-       |    networks:
-       |      - ek
-       |    links:
-       |      - elasticsearch
-       |      - kibana
-       |
-       |  kibana:
-       |    image: gerritforge/analytics-kibana:5.5.2-1
-       |    pull_policy: never
-       |    container_name: "kibana-for-${sanitisedName}-project"
-       |    networks:
-       |      - ek
-       |    depends_on:
-       |      - elasticsearch
-       |    ports:
-       |      - "5601:5601"
-       |
-       |  elasticsearch:
-       |    image: gerritforge/analytics-elasticsearch:5.5.2-1
-       |    pull_policy: never
-       |    container_name: "es-for-${sanitisedName}-project"
-       |    networks:
-       |      - ek
-       |    environment:
-       |      - ES_JAVA_OPTS=-Xmx1g -Xms1g
-       |      - http.host=0.0.0.0
-       |      - network.host=_site_
-       |      - http.publish_host=_site_
-       |      - http.cors.allow-origin=*
-       |      - http.cors.enabled=true
-       |
-       |    ports:
-       |      - "9200:9200"
-       |      - "9300:9300"
-       |networks:
-       |  ek:
-       |    driver: bridge
+       |      - SPARK_LOCAL_IP=10.180.108.98
+       |    network_mode: host
      """.stripMargin
   }
 
@@ -149,4 +105,7 @@ case class Password(value: Option[String]) extends AnalyticsOption {
 }
 case class Username(value: Option[String]) extends AnalyticsOption {
   val name = "--username"
+}
+case class DashboardName(value: Option[String]) extends AnalyticsOption {
+  val name = "--dashboard"
 }
